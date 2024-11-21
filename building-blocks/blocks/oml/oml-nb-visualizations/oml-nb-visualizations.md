@@ -29,18 +29,18 @@ This lab assumes you have:
 
 A table is an arrangement of information or data in rows and columns. Using OML Notebooks, you can create database tables, and also view the information in a tabular format. 
 
-**Dataset:** `CUSTOMER_INSURANCE_LTV`. In this example, we will use the example template notebook OML-Run-me-first.
+**Dataset:** `CUSTOMER_INSURANCE_LTV`. In this example, we will use the example template notebook _OML-Run-me-first_.
 
 1. On the Oracle Machine Learning UI homepage, click **Examples.** 
 	![Examples on Homepage](images/homepage-examples.png)
 	Or, open the left navigation menu by clicking the Cloud menu icon click ![Cloud menu icon](images/cloud-menu-icon.png) on the top left corner of the page. Click **Templates** and then click **Examples.** 
 	![Examples on Left Navigation menu](images/left-nav-examples.png)
 
-2. The OML-Run-Me-First example is listed. If you are unable to view it, type the name in the Filter field. 
+2. The _OML-Run-Me-First_ example template is listed. If you are unable to view it, type the name in the **Filter** field. 
 
 	![OML Run-me-first notebook](images/run-me-first.png)
 
-3. Click on the `OML Run-me-first tile` (and not on the name) to highlight it in blue. Then click the Create Notebook icon. 
+3. Click on the `OML Run-me-first tile` (and not on the name) to highlight it in blue. Then click the **Create Notebook** icon. 
 
 	![Create the OML Run-me-first notebook](images/create-run-me-first.png)
 
@@ -70,19 +70,18 @@ A table is an arrangement of information or data in rows and columns. Using OML 
 	![Customer Insurance table](images/view-cust-insur-table.png)
 
 
-8. In this table, you can customize your views and settings.
+8. In this table, you can customize your views and settings:
 
 	* Sort the columns in ascending or descending order: Click on the down arrow or up arrow against the columns to sort the data in ascending or descending order. 
 	
 	* Use the horizontal scroll bar to scroll horizontally to view the columns on the right.
 
 		![Sort table](images/sort-table-columns.png)
-	* Filter specific search terms. In the Search field, type the entry or term that you are looking for. In this example, the term "Single" is entered. All the rows that contain the term SINGLE in the column `MARITAL_STATUS` are filtered for display.
+	* Filter specific search terms. In the **Search** field, type the entry or term that you are looking for. In this example, the term `Single` is entered. All the rows that contain the term SINGLE in the column `MARITAL_STATUS` are filtered for display.
 	
 		![Filter columns in table](images/filter-search-table.png)
 
-	> **Note:** Rows that do not contain this term are hidden from the view and the remaining rows highlight the location of the search term within the row
-
+	> **Note:** Rows that do not contain this term are hidden from the view and the remaining rows highlight the location of the search term within the row.
 
 	* By default, 5 rows are displayed. If you want to view more rows or customize the table settings, click on the Settings icon ![Settings](images/settings-icon.png) to open the Settings dialog.
 
@@ -97,7 +96,9 @@ A table is an arrangement of information or data in rows and columns. Using OML 
 		* **Number of Items on Page:** Click on the up or down arrow, as applicable, to set the number of rows to be displayed on the page. By default, 5 rows are displayed.
 
 
-		* **Columns to Display:** By default, all the columns are listed. If you want to remove any column from displaying, click on the X in the column name. To view the column again, click inside the Columns to Show field. The hidden columns are displayed. Click on the column that you want to view again. In this example the column MARITAL_STATUS was removed. Clicking on the Columns to Show field displays it; click on it to include in the display. 
+		* **Columns to Display:** By default, all the columns are listed. If you want to remove any column from displaying, click on the X in the column name. To view the column again, click inside the **Columns to Show** field. The hidden columns are displayed. Click on the column that you want to view again. In this example the column MARITAL_STATUS was removed. Clicking on the **Columns to Show** field displays it; click on it to include in the display.
+
+This completes the task of creating a table, and visualizing the data in it. 
 
 ## Task 2: Visualize Data in a Bar Chart
 
@@ -121,9 +122,9 @@ To visualize data in a bar chart:
 
 	![Bar chart settings](images/settings1-bar-chart.png)
 
-	* In **Series to Show**, select `CREDIT_BALANCE`, `MORTGAGE_AMOUNT`, and `BANK_FUNDS`.
+	* In **Series to Show:** Select `CREDIT_BALANCE`, `MORTGAGE_AMOUNT`, and `BANK_FUNDS`.
 
-	* In **Group By**, select `MARITAL_STATUS`
+	* In **Group By:** Select `MARITAL_STATUS`
 
 4. The average of `CREDIT_BALANCE`, `MORTGAGE_AMOUNT`, and `BANK_FUNDS` are each represented by adjacent bar charts, and the bar charts are grouped by `MARITAL_STATUS` - single, married, divorced, widowed, and others. The bar chart now looks like this, as shown in the screenshot below:
 
@@ -147,6 +148,7 @@ To visualize data in a bar chart:
 
 	![Bar chart](images/bar-chart3.png)
 
+	This completes the task of visualizing your data in a bar chart, and customizing its output.
 
 ## Task 3: Visualize Data in a Funnel Chart
 
@@ -228,8 +230,8 @@ To visualize data in a scatter Plot:
 	![Toolbar](images/visual-toolbar-scatterplot.png)
 
 2. Click the settings icon. In the Settings dialog, under **Setup:**
-* **Series to show on X-axis:** Click and select `INCOME`.
-* **Series to show on Y-axis:** Click and select `MORTGAGE_AMOUNT`.
+* **Series to Show on X-axis:** Click and select `INCOME`.
+* **Series to Show on Y-axis:** Click and select `MORTGAGE_AMOUNT`.
 * **Group By:** Select `MARITAL_STATUS`.
 3. Under **Customization:** 
 * **Visualization:** Retain the default settings.  
@@ -428,7 +430,7 @@ A box plot provides an overview of data distributions in numeric data. It provid
 	![Boxplot chart 1](images/boxplot1.png)
 	As you can see, by default the data is grouped by the 3 species (classes) - Setosa, Versicolor, and Virginca along the X-axis, and the sepal length along the Y axis. Hover your cursor over each box plot to view the count.
 
-5. Click on Settings to view how the data is plotted. Under **Setup**, go to **Series to show,** and click to add the other three numeric properties - Sepal Width, Petal Length, and Petal Width.
+5. Click on Settings to view how the data is plotted. Under **Setup**, go to **Series to Show,** and click to add the other three numeric properties - Sepal Width, Petal Length, and Petal Width.
 	![Boxplot chart 2](images/boxplot2.png)
 
 6. Under Settings, click **Customizations,** edit the following settings:
