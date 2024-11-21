@@ -165,11 +165,9 @@ To view the data in a funnel chart:
 
 	![Default Funnel Chart](images/default-funnel-chart.png)
 
-
 3. Hover your cursor to view the series that is plotted in the funnel chart for each of the 5 groups.
 
-
-4. Let's compare a few attributes `CREDIT_BALANCE`, `MORTGAGE_AMOUNT` and `INCOME` the same groups. Click Settings ![Settings icon](images/settings-icon.png) and edit the following:
+4. Let's compare a few attributes `CREDIT_BALANCE`, `MORTGAGE_AMOUNT` and `INCOME` of the same groups. Click Settings ![Settings icon](images/settings-icon.png) and edit the following:
 
 	![Settings Funnel Chart](images/settings-funnel-chart.png)
 
@@ -219,7 +217,7 @@ To visualize data in a Pyramid Chart:
 ## Task 5: Visualize Data in a Scatter Plot
 Scatter plots represent the relationship between two numeric variables in a data set. It represents data points on a two-dimensional plane and show how much one variable is affected by another. The independent variable is plotted on the X-axis, while the dependent variable is plotted on the Y-axis. You can display points by one or more grouping variables such that each group has a distinct color and shape. 
 
-**When to use this chart:** Use the scatter plot when you have paired numerical data, and you want to determine the relationship between the related variables in certain scenarios, identifying correlations and trends (linear and non-linear relationships), detecting outliers, understanding data distribution, identifying groupings or clusters of data. Scatterplots can also be useful when comparing multiple datasets where each datasets values are represented as a different group. Scatterplots are also useful for evaluating regression models by plotting, e.g., actual versus predicted values, 
+**When to use this chart:** Use the scatter plot when you have paired numerical data, and you want to determine the relationship between the related variables in certain scenarios, identifying correlations and trends (linear and non-linear relationships), detecting outliers, understanding data distribution, identifying groupings or clusters of data. Scatter plots can also be useful when comparing multiple datasets where each datasets values are represented as a different group. Scatter plots are also useful for evaluating regression models by plotting, e.g., actual versus predicted values. 
 
 **Dataset:** `CUSTOMER_INSURANCE_LTV`. In this example, we will use the example template notebook OML-Run-me-first.
 
@@ -230,11 +228,9 @@ To visualize data in a scatter Plot:
 	![Toolbar](images/visual-toolbar-scatterplot.png)
 
 2. Click the settings icon. In the Settings dialog, under **Setup:**
-
 * **Series to show on X-axis:** Click and select `INCOME`.
 * **Series to show on Y-axis:** Click and select `MORTGAGE_AMOUNT`.
 * **Group By:** Select `MARITAL_STATUS`.
-
 3. Under **Customization:** 
 * **Visualization:** Retain the default settings.  
 * **Description:** Under **Title**, enter `Scatter plot to show the correlation between income and mortgage amount.` 
@@ -262,7 +258,7 @@ A line chart is a graphical representation used to display data points connected
 
 	![Sales table](images/sales-table.png)
 
-3. By default, the Line chart shows the average amount sold from the year 1998 till 2001, as shown in the screenshot below. 
+3. By default, the line chart shows the average amount sold from the year 1998 till 2001, as shown in the screenshot below. 
 
 	![Line chart](images/line-chart1.png)
 
@@ -279,12 +275,9 @@ A line chart is a graphical representation used to display data points connected
 	* **Y-axis:** Enter `Amount Sold`. Corresponding to each sale date, the sum of the amount sold is plotted along the Y-axis.
 	* **Description:** Enter `Sales trend of product ABC` 
 	
-	The Line chart now displays the sum of the amount sold from the year 1998 to 2001, as shown below. Hover your cursor over the highest point in the line chart to view the values. You can see that on 5/30/2000, the product recorded the highest sale in terms of the sum of the amount sold. 
+	The line chart now displays the sum of the amount sold from the year 1998 to 2001, as shown below. Hover your cursor over the highest point in the line chart to view the values. You can see that on 5/30/2000, the product recorded the highest sale in terms of the sum of the amount sold. 
 
 	![Line chart](images/line-chart2.png)
-
-
-
 
 ## Task 7: Visualize Data in an Area Chart
 An area chart uses lines to connect the data points and fills the area below these lines to the x-axis. Each data series contributes to the formation of a distinct shaded region. This emphasizes its contribution to the overall trend. As the data points fluctuate, the shaded areas expand or contract. 
@@ -293,7 +286,7 @@ An area chart uses lines to connect the data points and fills the area below the
 
 **Dataset:** `SH.SALES` table. The `SALES` table that is present in the `SH` schema. 
 
-To use the area chart: 
+To visualize your data in an area chart: 
 
 1. In another `%sql` paragraph, run the following script:
 
@@ -344,7 +337,7 @@ A pie chart is a graphical representation of data in a circular form, with each 
 
 **When to use this chart:** Use this chart to visualize the numerical proportion of the parts to the whole. 
 
-**Dataset:** The iris data set contains 3 classes (three different Iris species - Setosa, Versicolor, and Virginica) along with 50 samples each, and four numeric properties about those classes: Sepal Length, Sepal Width, Petal Length, and Petal Width. 
+**Dataset:** The `IRIS` dataset contains 3 classes (three different Iris species - Setosa, Versicolor, and Virginica) along with 50 samples each, and four numeric properties about those classes: Sepal Length, Sepal Width, Petal Length, and Petal Width. 
 
 To visualize data in a pie chart
 1. Run the following script in an R paragraph to create the Iris dataset:
@@ -420,10 +413,10 @@ A box plot provides an overview of data distributions in numeric data. It provid
 
 **When to use this chart:** Use this chart to show distributions of numeric data, especially if you want to compare them between multiple groups. 
 
-**Dataset:** The iris data set contains 3 classes (three different Iris species - Setosa, Versicolor, and Virginica) alongwith 50 samples each, and four numeric properties about those classes: Sepal Length, Sepal Width, Petal Length, and Petal Width.
+**Dataset:** The `IRIS` dataset contains 3 classes (three different Iris species - Setosa, Versicolor, and Virginica) alongwith 50 samples each, and four numeric properties about those classes: Sepal Length, Sepal Width, Petal Length, and Petal Width.
 
 
-1. We have already created the Iris dataset in Task 8. 
+1. We have already created the `IRIS_R` dataset in Task 8. 
 
 3. Click the box plot icon ![Boxplot icon](images/boxplot-icon.png).
 
@@ -440,8 +433,8 @@ A box plot provides an overview of data distributions in numeric data. It provid
 
 6. Under Settings, click **Customizations,** edit the following settings:
 	* **Visualization:** Click **Show Outliers.**
-	* **X-Axis:** In the **Text** field, enter `Iris Species;` Color enter **rgb(7, 17, 215, 0.88)**
-	* **Y-Axis:** In the **Text** field, enter `Petal & Sepal Properties;` Color: Enter **rgb(7, 17, 215, 0.88)**
+	* **X-Axis:** In the **Text** field, enter `Iris Species.` **Color:** Enter **rgb(7, 17, 215, 0.88)**
+	* **Y-Axis:** In the **Text** field, enter `Petal & Sepal Properties.` **Color:** Enter **rgb(7, 17, 215, 0.88)**
 	* **Description:** Enter the following - `Box Plot of the Iris flower dimension`. 
 	* **Color:** Enter **rgb(241, 8, 24)**
 	* Once done, close the dialog. 
