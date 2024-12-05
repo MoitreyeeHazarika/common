@@ -60,16 +60,20 @@ To create a data monitor:
     ![Create data monitor Data monitor - additional settings](images/new-data-monitor2.png)
 4. **Monitor Name:** Enter a name for the data monitor. In this example, let's enter `Monitor power consumption`.
 5. **Comments:** Enter comments. This is an optional field.
-6. **Baseline Data:** This is a table or view that contains baseline data to monitor. Click the search icon to open the Select Table dialog. In the Select Table dialog, under Schema, scroll to select the schema `OMLUSER`. Under Table, select the table `HOUSEHOLD_POWER_CONSUMPTION 2007`.
-    ![Select table - Baseline data](images/select-table-2007.png)
+6. **Baseline Data:** This is a table or view that contains baseline data to monitor. Click the search icon to open the Select Table dialog. In the Select Table dialog, under Schema, scroll to select the schema `OMLUSER`. Under Table, select the table `HOUSEHOLD_POWER_CONSUMPTION_BASE`.
+    ![Select table - Baseline data](images/select-table-base.png)
+    
     > **Note:** The supported data types for data monitoring are `NUMBER`, `BINARY_DOUBLE`, `FLOAT`, `BINARY_FLOAT`, `VARCHAR2`, `CHAR`, `NCHAR`, and `NVARCHAR2` with length `<=4000`. 
-7. **New Data:** This is also a table or view with new data to be compared against the table that you have selected in the Baseline Data field. Click the search icon to open the Select Table dialog. Here, once again select the `OMLUSER` schema, and then the table `HOUSEHOLD_POWER_CONSUMPTION 2009`. 
+7. **New Data:** This is also a table or view with new data to be compared against the table that you have selected in the Baseline Data field. Click the search icon to open the Select Table dialog. Here, once again select the `OMLUSER` schema, and then the table `HOUSEHOLD_POWER_CONSUMPTION_NEW`. 
+    
     >**Note:** The New Data field can have multiple periods in it, and new data can get added to it as well. 
-    ![Select table - New data](images/select-table-2009.png)
+    
+    ![Select table - New data](images/select-table-new.png)
 8. **Crosstab:** Select an attribute from the drop-down list. This attribute in the baseline and new data acts as an anchor or target for bi-variate analysis of your data. Select `GLOBAL_ACTIVE_POWER`.
-9. **Case ID:** This is an optional field. Enter a case identifier for the baseline and new data to improve the repeatability of the results. Select `ID`. 
-10. **Time Column:** This is the name of a column storing time information in the New Data table or view. Select the column `DATE_TIME` from the drop-down list.
-    > **Note:**  If the Time Column is blank, the entire New Data is treated as one period. 
+9. **Case ID:** This is an optional field. Enter a case identifier for the baseline and new data to improve the repeatability of the results. Let's leave it blank. 
+10. **Time Column:** This is the name of a column storing time information in the New Data table or view. Select the column `DATES` from the drop-down list.
+        
+    > **Note:**  If the Time Column is blank, the entire `New Data` is treated as one period. 
 11. **Analysis Period:** This is the length of time for which data monitoring is performed on the New Data. Select the analysis period for data monitoring. The options are Day, Week, Month, Year.
 12. **Start Date:** This is the start date of your data monitor schedule. If you do not provide a start date, the current date will be used as the start date. 
 13. **Repeat:** This value defines the number of times the data monitor run will be repeated for the frequency defined. Enter a number between 1 and 99. For example, if you enter 2 in the Repeat field here, and Minutes in the Frequency field, then the data monitor will run every 2 minutes.
@@ -85,13 +89,12 @@ To create a data monitor:
     * **Maximum Number of Runs:** This is the maximum number of times the data monitor can be run according to this schedule. The default is 3. 
 17. The **Features** grid displays the list of features to monitor. Here, you can select or deselect features to include or exclude from monitoring. By default, all features are selected. Feature statistics are provided if the selected data is a table and has RDBMS statistics automatically gathered by Autonomous Database. Oracle Machine Learning Services calculates the statistics on the first run for both, tables and views, and the computations are displayed here after the first run. The statistics are updated by subsequent runs.
 ![Data monitor - Features](images/dm-features-grid.png)
-18. Click **Save.** This completes the task of creating a data monitor and takes you to the Data Monitors page. 
+18.Now scroll up to the page and on the top right corner, click **Save.** This completes the task of creating a data monitor and takes you to the Data Monitors page. 
 
-![Data monitor - Save](images/new-data-monitor-save.png)
 19. On the Data Monitors page, click to select the monitor that you just created, and then click **Start**. 
 ![Data monitor - Start](images/data-monitor-start.png)    
 
-20. After the data monitor runs successfully, the Last Status shows as SUCCEEDED. Click on the checkbox against the data monitor name to view the data drift on the lower pane of the page.  . 
+20. After the data monitor runs successfully, the Last Status shows as SUCCEEDED. Click on the checkbox against the data monitor name to view the data drift on the lower pane of the page. You may also hover your cursor over the grapg to view the data monitoring details. 
 ![Data monitor - Data Drift](images/dmpage-datadrift.png)
 
 This completes the task of creating and running a data monitor. 
