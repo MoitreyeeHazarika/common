@@ -480,6 +480,8 @@ You may now **proceed to the next lab.**
 
 ## Acknowledgements
 
-* **Author** : Mark Hornick, Sr. Director, Data Science / Machine Learning PM; Moitreyee Hazarika, Principal User Assistance Developer, Database User Assistance Development
+* **Author** : Moitreyee Hazarika, Principal User Assistance Developer, Database User Assistance Development
+
+* **Contributors:** Mark Hornick, Sr. Director, Data Science / Machine Learning PM; Marcos Arancibia Coddou, Product Manager, Oracle Data Science; Sherry LaMonica, Consulting Member of Tech Staff, Machine Learning
 
 * **Last Updated By/Date**: Moitreyee Hazarika, December 2024
