@@ -23,11 +23,15 @@ This lab takes approximately 30 minutes to complete.
 
 * Access to your Oracle Machine Learning user interface
 
-In this lab, you will learn how to create a data monitor and a model monitor. The use case here uses the `Individual household electricity consumption` dataset which includes various consumption metrics of a household from 2007 to 2010. The goal is to understand if and how household consumption has changed over four years.  
+In this lab, you will learn how to create a data monitor and a model monitor. The use case here uses the `Individual household electricity consumption` dataset which includes various consumption metrics of a household for the year 2007. The goal is to understand if and how household consumption has changed over the year.
 
+## Task 1: Load Dataset for Data Monitoring
+
+Before you begin with data and model monitoring, you must first load these datasets - `HOUSEHOLD_POWER_BASE` and `HOUSEHOLD_POWER_NEW` in your schema. 
 The dataset comprises the following columns:
 
-* `DATE_TIME` — Contains the date and time related information in dd:mm:yyyy:hh:mm:ss format.
+* `DATES` — Contains the date in yyyy:mm:dd format.
+* `TIMES` - Contains the timestamp in hh:mm:ss format.
 * `GLOBAL_ACTIVE_POWER` — This is the household global minute-averaged active power (in kilowatt).
 * `GLOBAL_REACTIVE_POWER` — This is the household global minute-averaged reactive power (in kilowatt).
 * `VOLTAGE` — This is the Minute-averaged voltage (in volt).
@@ -36,8 +40,91 @@ The dataset comprises the following columns:
 * `SUB_METERING_2` — This is the energy sub-metering No. 2 (in watt-hour of active energy). It corresponds to the laundry room.
 * `SUB_METERING_3` — This is the energy sub-metering No. 2 (in watt-hour of active energy). It corresponds to an electric water heater and air conditioner.
 
+To create the datasset:
+1. Create a notebook and in a `%script` paragraph, run the following pl/sql script to create the `HOUSEHOLD_POWER_BASE` dataset:
 
-## Task 1: Create a Data Monitor
+    ```
+    <copy>
+    %script
+
+    DECLARE
+        uri_data        VARCHAR2(1000) := 'https://objectstorage.us-sanjose-1.oraclecloud.com/n/adwc4pm/b/OML_public_data/o/household_power_base.csv';
+        csv_format      VARCHAR2(1000) := '{"dateformat":"YYYY-MM-DD", "skipheaders":"1", "delimiter":",", "ignoreblanklines":"true", "removequotes":"true", "blankasnull":"true", "trimspaces":"lrtrim", "truncatecol":"true", "ignoremissingcolumns":"true"}';
+    BEGIN
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP TABLE EXT_HOUSEHOLD_POWER_BASE';
+            EXECUTE IMMEDIATE 'DROP TABLE HOUSEHOLD_POWER_BASE';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+
+        -- Create the external table
+        DBMS_CLOUD.CREATE_EXTERNAL_TABLE(
+            TABLE_NAME => 'EXT_HOUSEHOLD_POWER_BASE',
+            FILE_URI_LIST => uri_data,
+            FORMAT => csv_format,
+            COLUMN_LIST => 'DATES TIMESTAMP (6), 
+                            TIMES VARCHAR2(50 BYTE), 
+                            GLOBAL_ACTIVE_POWER BINARY_DOUBLE, 
+                            GLOBAL_REACTIVE_POWER BINARY_DOUBLE, 
+                            VOLTAGE BINARY_DOUBLE, 
+                            GLOBAL_INTENSITY BINARY_DOUBLE, 
+                            SUB_METERING_1 BINARY_DOUBLE, 
+                            SUB_METERING_2 BINARY_DOUBLE, 
+                            SUB_METERING_3 BINARY_DOUBLE');
+
+        -- Create the target table
+        EXECUTE IMMEDIATE 'CREATE TABLE HOUSEHOLD_POWER_BASE AS 
+                        SELECT DATES, TIMES, GLOBAL_ACTIVE_POWER, GLOBAL_REACTIVE_POWER, 
+                                VOLTAGE, GLOBAL_INTENSITY, SUB_METERING_1, SUB_METERING_2, SUB_METERING_3 
+                        FROM EXT_HOUSEHOLD_POWER_BASE';
+    END;
+
+    </copy>
+    ```
+
+2. In another `%script` paragraph, run the following pl/sql script to create the `HOUSEHOLD_POWER_NEW` dataset:
+
+    ```
+    <copy>
+    %script
+
+    DECLARE
+        uri_data        VARCHAR2(1000) := 'https://objectstorage.us-sanjose-1.oraclecloud.com/n/adwc4pm/b/OML_public_data/o/household_power_new.csv';
+        csv_format      VARCHAR2(1000) := '{"dateformat":"YYYY-MM-DD", "skipheaders":"1", "delimiter":",", "ignoreblanklines":"true", "removequotes":"true", "blankasnull":"true", "trimspaces":"lrtrim", "truncatecol":"true", "ignoremissingcolumns":"true"}';
+    BEGIN
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP TABLE EXT_HOUSEHOLD_POWER_NEW';
+            EXECUTE IMMEDIATE 'DROP TABLE HOUSEHOLD_POWER_NEW';
+        EXCEPTION
+            WHEN OTHERS THEN NULL;
+        END;
+
+        DBMS_CLOUD.CREATE_EXTERNAL_TABLE(
+            TABLE_NAME => 'EXT_HOUSEHOLD_POWER_NEW',
+            FILE_URI_LIST => uri_data,
+            FORMAT => csv_format,
+            COLUMN_LIST => 'DATES TIMESTAMP (6), 
+                            TIMES VARCHAR2(50 BYTE), 
+                            GLOBAL_ACTIVE_POWER BINARY_DOUBLE, 
+                            GLOBAL_REACTIVE_POWER BINARY_DOUBLE, 
+                            VOLTAGE BINARY_DOUBLE, 
+                            GLOBAL_INTENSITY BINARY_DOUBLE, 
+                            SUB_METERING_1 BINARY_DOUBLE, 
+                            SUB_METERING_2 BINARY_DOUBLE, 
+                            SUB_METERING_3 BINARY_DOUBLE');
+
+        EXECUTE IMMEDIATE 'CREATE TABLE HOUSEHOLD_POWER_NEW AS 
+                        SELECT DATES, TIMES, GLOBAL_ACTIVE_POWER, GLOBAL_REACTIVE_POWER, 
+                                VOLTAGE, GLOBAL_INTENSITY, SUB_METERING_1, SUB_METERING_2, SUB_METERING_3 
+                        FROM EXT_HOUSEHOLD_POWER_NEW';
+    END;
+
+    </copy>
+    ```
+This completes the task of creating the dataset. 
+
+## Task 2: Create a Data Monitor
 
 In this lab, you will learn how to create a data monitor. Data Monitoring allows you to detect data drift over time. On the Data Monitor page, you can create, run, and track data monitors and the results. To monitor data and detect data drift, you must create a data monitor. 
 
@@ -99,7 +186,7 @@ To create a data monitor:
 
 This completes the task of creating and running a data monitor. 
 
-## Task 1.1: View Data Monitor Results
+## Task 2.1: View Data Monitor Results
 
 After your data monitor runs successfully, data monitoring results are available for review. The _Data Monitor Results_ page displays the information on the selected data monitor. To view data monitor results:
 
@@ -167,7 +254,7 @@ After your data monitor runs successfully, data monitoring results are available
 
 This completes the task of viewing the data monitor details and statistical computations of the monitored data.
 
-## Task 1.2: View Data Monitor History
+## Task 2.2: View Data Monitor History
 
 1. The History page displays the runtime details of data monitors.
     ![Data Monitor - History](images/dm-history.png)
@@ -185,7 +272,7 @@ This completes the task of viewing the data monitor details and statistical comp
 
 This completes the task of viewing the data monitor runtime history.
 
-## Task 2: Create a Model Monitor
+## Task 3: Create a Model Monitor
 
 A model monitor helps you monitor several compatible models and compute the model drift metric. Compatible models refer to those models that are trained on the same target and using the same mining function. The model drift chart consists of multiple series of data drift points, one for each monitored model. 
 
@@ -265,7 +352,7 @@ We will begin by creating an AutoML Experiment to create and deploy a few machin
 This completes the task of creating and running a model monitor.
 
 
-## Task 2.1: View Model Monitor Results
+## Task 3.1: View Model Monitor Results
 
 After your model monitor runs successfully, you can view the model monitoring results. 
 1. On the Model Monitors page, click on the checkbox against the model monitor name to view the model drift on the lower pane of the page.
@@ -364,7 +451,7 @@ The computed details of the model features are:
 
 This completes the task of viewing the model monitor details and statistical computations of the monitored model.
 
-## Task 2.2: View Model Monitor History
+## Task 3.2: View Model Monitor History
 
 The History page displays the runtime details of the model monitors.
 
