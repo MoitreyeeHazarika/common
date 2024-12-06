@@ -229,6 +229,7 @@ We will begin by creating an AutoML Experiment to create and deploy a few machin
     * **Frequency:** This value determines how frequently the model monitor run will be performed on the New Data. Select `Days` in this field. The options are Minutes, Hours, Days, Weeks, Months. In this lab, you have entered `1` in the **Repeat** field, and `Days` in the **Frequency** field. The **Start Date** field has 3/18/24. This means that as per the schedule, the model monitor will run from 3/18/24 once every day.
     * **Mining Function:** The available mining functions are Regression and Classification. Select a function as applicable. In this example, `Regression` is selected.
     * **Target:** Select an attribute from the drop-down list. In this example, `GLOBAL_ACTIVE_POWER` is used as the target for regression models.
+    When you provide a value in the **Mining Function** and **Target** fields, the models that have been deployed are obtained and is displayed in the Models section on the Model Monitor page.
     * **Recompute:** Select this option to update the already computed periods. This means that only time periods not present in the output result table will be computed. By default, Recompute is disabled. 
     * **Monitor Data:** Select this option to enable data monitoring for the specified data. When enabled, a data monitor is also created along with the model monitor to compute the Predictive Feature Impact versus Drift Feature Impact in the model specific results. Select this option.
 4. Click **Additional Settings** to expand this section and provide advanced settings for your model monitor:
@@ -248,14 +249,18 @@ We will begin by creating an AutoML Experiment to create and deploy a few machin
 6. Click **Save** on the top right corner of the page. This takes you back to the Model Monitors page. 
        >**Note:** On the Model Monitors page, you must select the model monitor and click **Start** to begin model monitoring. 
 
-7. On the Model Monitors page, select the model monitor that you just created, and click **Start**. Once the monitor starts running, the Status indicates it so. Once the running is completed, it shows the Last Status as SUCCEEDED, and the Status as SCHEDULED.    
+7. On the Model Monitors page, select the model monitor that you just created, and click **Start**.
 
-    ![Model Monitor - Start](images/model-monitor-start.png)
-    Click on the checkbox against the model name to view the model drift on the lower pane of the page. 
-    
-   ![Model Monitor - Model Drift](images/model-drift-mmpage.png)
+    * Once the running is completed, it shows the Last Status as SUCCEEDED, and the Status as SCHEDULED.    
 
-Once you provide a value in the **Mining Function** and **Target** fields, the models that have been deployed are obtained and is displayed here in the Models section. 
+        ![Model Monitor - Start](images/model-monitor-start.png)
+    * Click on the checkbox against the model name to view the model drift on the lower pane of the page.     
+        ![Model Monitor - Model Drift](images/model-drift-mmpage.png)
+
+    * Click on the ellipsis to view the details of the data monitor. Click **Results** to view the data monitoring results. Click **Settings** to view the data monitor settings.
+        ![Model Monitor - Model Drift](images/mm-dm-results-settings.png) 
+
+
 
 This completes the task of creating and running a model monitor.
 
