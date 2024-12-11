@@ -29,7 +29,7 @@ A notebook is a web-based interface for data analysis, data discovery, data visu
 
 	![Notebooks option in OML homepage](images/homepage.png)
 
->**Note:** Note: Alternatively, you can also access the URL for the Oracle Machine Learning sign in page directly from the ADB Console Tool configuration tab. 
+>**Note:**  Alternatively, you can also access the URL for the Oracle Machine Learning sign in page directly from the ADB Console Tool configuration tab. 
 
 To access the URL for the Oracle Machine Learning sign in page directly from the ADB Console Tool configuration tab:
 
