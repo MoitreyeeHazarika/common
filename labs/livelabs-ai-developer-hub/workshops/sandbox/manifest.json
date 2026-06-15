@@ -4,7 +4,7 @@
   "tutorials": [
     {
       "title": "Introduction",
-      "description": "Overview of the LiveLabs playground workshop and the author workflows it packages for workshop creation, screenshots, quiz checks, and industry conversion.",
+      "description": "Overview of the LiveLabs AI Developer Hub, including setup, Codex skills, optional LiveStacks demo generation, and author workflow labs.",
       "filename": "./../../introduction/introduction.md"
     },
     {
@@ -13,7 +13,7 @@
       "filename": "./../../from-idea-to-publish-ready/from-idea-to-publish-ready.md"
     },
     {
-      "title": "Lab 2: Capture Workshop Images in Minute",
+      "title": "Lab 2: Capture Workshop Images in Minutes",
       "description": "Capture workshop screenshots, annotate key UI states, blur sensitive information, and keep image assets aligned with placeholder references.",
       "filename": "./../../capture-workshop-images-in-minutes/capture-workshop-images-in-minutes.md"
     },
