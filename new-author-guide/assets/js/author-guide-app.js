@@ -96,6 +96,8 @@
     currentStep: 0,
     fastTrack: "guided",
     activeTag: "all",
+    activeTags: [],
+    toolkitSort: "alphabetical",
     toolkitQuery: "",
     searchQuery: "",
     guideSection: guideSections.length ? guideSections[0].id : ""
@@ -139,6 +141,7 @@
   var beginnerMode = document.getElementById("beginnerMode");
   var explorerMode = document.getElementById("explorerMode");
   var guideMode = document.getElementById("guideMode");
+  var generatorMode = document.getElementById("generatorMode");
   var searchMode = document.getElementById("searchMode");
   var rabbitFlow = document.getElementById("rabbitFlow");
   var stepSections = Array.from(document.querySelectorAll(".rabbit-step"));
@@ -157,8 +160,11 @@
   var bubbleGrid = document.getElementById("bubbleGrid");
   var emptyState = document.getElementById("emptyState");
   var resultCount = document.getElementById("resultCount");
+  var filterSummary = document.getElementById("filterSummary");
   var bubbleSearch = document.getElementById("bubbleSearch");
   var clearSearch = document.getElementById("clearSearch");
+  var toolkitSort = document.getElementById("toolkitSort");
+  var tagPillsMount = document.getElementById("tagPills");
   var tagPills = Array.from(document.querySelectorAll(".tag-pill"));
   var guideLayout = document.querySelector(".guide-layout");
   var guideSidebar = document.querySelector(".guide-sidebar");
@@ -179,6 +185,22 @@
   var searchPageForm = document.getElementById("searchPageForm");
   var searchPageInput = document.getElementById("searchPageInput");
   var searchPageClear = document.getElementById("searchPageClear");
+  var wmsExampleForm = document.getElementById("wmsExampleForm");
+  var wmsExamplePrompt = document.getElementById("wmsExamplePrompt");
+  var wmsExampleResults = document.getElementById("wmsExampleResults");
+  var wmsExampleEmpty = document.getElementById("wmsExampleEmpty");
+  var wmsExampleLoading = document.getElementById("wmsExampleLoading");
+  var wmsExampleError = document.getElementById("wmsExampleError");
+  var workshopMarkdownForm = document.getElementById("workshopMarkdownForm");
+  var workshopMarkdownPrompt = document.getElementById("workshopMarkdownPrompt");
+  var workshopMarkdownType = document.getElementById("workshopMarkdownType");
+  var workshopMarkdownOutput = document.getElementById("workshopMarkdownOutput");
+  var workshopMarkdownSummary = document.getElementById("workshopMarkdownSummary");
+  var generatorOutputMeta = document.getElementById("generatorOutputMeta");
+  var workshopMarkdownEmpty = document.getElementById("workshopMarkdownEmpty");
+  var workshopMarkdownLoading = document.getElementById("workshopMarkdownLoading");
+  var workshopMarkdownError = document.getElementById("workshopMarkdownError");
+  var copyGeneratedMarkdown = document.getElementById("copyGeneratedMarkdown");
   var bubbleModalElement = document.getElementById("bubbleModal");
   var bubbleModal = bootstrap.Modal.getOrCreateInstance(bubbleModalElement);
   var imageLightbox = document.getElementById("imageLightbox");
@@ -190,6 +212,7 @@
   var authorNavController = null;
   var lastExpandedFigure = null;
   var layoutSyncFrame = 0;
+  var generatedMarkdownText = "";
 
   bubbleModalElement.addEventListener("hidden.bs.modal", function () {
     closeImageLightbox({ announce: false, restoreFocus: false });
@@ -345,6 +368,8 @@
       currentStep: state.currentStep,
       fastTrack: state.fastTrack,
       activeTag: state.activeTag,
+      activeTags: state.activeTags,
+      toolkitSort: state.toolkitSort,
       toolkitQuery: state.toolkitQuery,
       searchQuery: state.searchQuery,
       guideSection: state.guideSection,
@@ -411,6 +436,11 @@
 
     if (state.mode === "guide") {
       setHash("#guide-" + state.guideSection, options);
+      return;
+    }
+
+    if (state.mode === "generator") {
+      setHash("#markdown-generator", options);
       return;
     }
 
@@ -622,11 +652,27 @@
   }
 
   function titleCaseTag(tag) {
-    if (tag === "qa") {
-      return "Quality Assurance";
+    var normalized = normalizeTagValue(tag);
+    var labelMap = {
+      ai: "AI",
+      assets: "Assets",
+      beginner: "Beginner",
+      advanced: "Advanced",
+      interactivity: "Interactivity",
+      livestack: "LiveStack",
+      markdown: "Markdown",
+      marketplace: "Marketplace",
+      media: "Media",
+      qa: "Quality Assurance",
+      "quality-assurance": "Quality Assurance",
+      workflow: "Workflow"
+    };
+
+    if (labelMap[normalized]) {
+      return labelMap[normalized];
     }
 
-    return tag
+    return normalized
       .split("-")
       .map(function (part) {
         return part.charAt(0).toUpperCase() + part.slice(1);
@@ -645,6 +691,27 @@
   function uniqueList(items) {
     return Array.from(new Set((items || []).filter(Boolean)));
   }
+
+  function normalizeTagValue(tag) {
+    return normalizeText(tag).replace(/\s+/g, "-");
+  }
+
+  function getItemTags(item) {
+    return uniqueList((item.tags || []).map(normalizeTagValue).filter(Boolean));
+  }
+
+  function normalizeTagSelection(tags) {
+    var list = Array.isArray(tags) ? tags : [tags];
+
+    return uniqueList(list.map(normalizeTagValue).filter(function (tag) {
+      return tag && tag !== "all";
+    }));
+  }
+
+  explorerItems.forEach(function (item, index) {
+    item.__sourceOrder = index;
+    item.__tags = getItemTags(item);
+  });
 
   function resolveGuideTarget(target, sourceHref) {
     var requested = String(target || "").trim();
@@ -1099,47 +1166,218 @@
     updateBreadcrumb();
   }
 
-  function renderExplorer() {
-    var query = state.toolkitQuery.trim().toLowerCase();
-    var visibleItems = explorerItems.filter(function (item) {
-      var haystack = [
-        item.title,
-        item.short,
-        item.description,
-        flattenList(item.steps),
-        flattenList(item.checkpoints),
-        flattenList(item.watchFor),
-        item.snippet || "",
-        flattenFields(item.exampleFields),
-        flattenResources(item.resourceLinks),
-        flattenMilestones(item.milestones)
-      ].concat(item.tags).join(" ").toLowerCase();
-      var matchesQuery = !query || haystack.indexOf(query) !== -1;
-      var matchesTag = state.activeTag === "all" || item.tags.indexOf(state.activeTag) !== -1;
-      return matchesQuery && matchesTag;
+  function getTagFacets() {
+    var counts = {};
+
+    explorerItems.forEach(function (item) {
+      (item.__tags || getItemTags(item)).forEach(function (tag) {
+        counts[tag] = (counts[tag] || 0) + 1;
+      });
     });
 
-    bubbleGrid.innerHTML = visibleItems.map(function (item) {
+    return Object.keys(counts).sort(function (left, right) {
+      return titleCaseTag(left).localeCompare(titleCaseTag(right), undefined, { sensitivity: "base" });
+    }).map(function (tag) {
+      return {
+        tag: tag,
+        label: titleCaseTag(tag),
+        count: counts[tag]
+      };
+    });
+  }
+
+  function updateTagPillState() {
+    var activeTags = normalizeTagSelection(state.activeTags);
+
+    tagPills.forEach(function (pill) {
+      var tag = pill.getAttribute("data-tag");
+      var isAll = tag === "all";
+      var isActive = isAll ? activeTags.length === 0 : activeTags.indexOf(tag) !== -1;
+
+      pill.classList.toggle("is-active", isActive);
+      pill.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
+  }
+
+  function renderTagPills() {
+    if (!tagPillsMount) {
+      return;
+    }
+
+    tagPillsMount.innerHTML = [
+      '<button type="button" class="tag-pill is-active" data-tag="all" aria-pressed="true">All <span class="tag-pill-count">', explorerItems.length, "</span></button>"
+    ].concat(getTagFacets().map(function (facet) {
+      return [
+        '<button type="button" class="tag-pill" data-tag="', escapeAttribute(facet.tag), '" aria-pressed="false">',
+        escapeHtml(facet.label),
+        ' <span class="tag-pill-count">',
+        facet.count,
+        "</span>",
+        "</button>"
+      ].join("");
+    })).join("");
+
+    tagPills = Array.from(tagPillsMount.querySelectorAll(".tag-pill"));
+    updateTagPillState();
+  }
+
+  function buildExplorerSearchEntry(item) {
+    return makeSearchEntry({
+      id: item.id,
+      typeLabel: "Cheatsheet",
+      title: item.title,
+      summary: item.short || item.description || "",
+      path: "Cheatsheet / " + item.title,
+      sourceHref: item.sourceHref || "",
+      steps: item.steps,
+      checkpoints: item.checkpoints,
+      watchFor: item.watchFor,
+      snippet: item.snippet,
+      exampleFields: item.exampleFields,
+      resourceLinks: item.resourceLinks,
+      milestones: item.milestones,
+      tags: item.tags,
+      keywords: item.keywords
+    });
+  }
+
+  function itemUpdatedTime(item) {
+    var time = Date.parse(item.updatedAt || "");
+    return Number.isFinite(time) ? time : 0;
+  }
+
+  function compareExplorerTitle(left, right) {
+    return String(left.item.title || "").localeCompare(String(right.item.title || ""), undefined, {
+      sensitivity: "base"
+    });
+  }
+
+  function sortExplorerEntries(entries, query) {
+    var mode = state.toolkitSort || "alphabetical";
+
+    return entries.slice().sort(function (left, right) {
+      if (mode === "relevance") {
+        if (right.score !== left.score) {
+          return right.score - left.score;
+        }
+        return compareExplorerTitle(left, right);
+      }
+
+      if (mode === "latest") {
+        if (right.updatedTime !== left.updatedTime) {
+          return right.updatedTime - left.updatedTime;
+        }
+        return compareExplorerTitle(left, right);
+      }
+
+      if (mode === "workflow") {
+        return left.item.__sourceOrder - right.item.__sourceOrder;
+      }
+
+      return compareExplorerTitle(left, right);
+    });
+  }
+
+  function renderExplorerMeta(entry) {
+    var bits = [];
+
+    if ((state.toolkitSort || "") === "relevance" && state.toolkitQuery.trim()) {
+      bits.push("Match " + entry.score);
+    }
+
+    if (!bits.length) {
+      return "";
+    }
+
+    return '<span class="bubble-meta">' + bits.map(function (bit) {
+      return '<span>' + escapeHtml(bit) + "</span>";
+    }).join("") + "</span>";
+  }
+
+  function currentSortLabel() {
+    var sortLabels = {
+      alphabetical: "Alphabetical",
+      latest: "Latest",
+      relevance: "Most relevant",
+      workflow: "Source workflow"
+    };
+
+    return sortLabels[state.toolkitSort] || sortLabels.alphabetical;
+  }
+
+  function updateExplorerSummary(count) {
+    var tagText;
+    var queryText = state.toolkitQuery.trim();
+    var activeTags = normalizeTagSelection(state.activeTags);
+
+    resultCount.textContent = "Showing " + count + " cheatsheet card" + (count === 1 ? "" : "s");
+
+    if (!filterSummary) {
+      return;
+    }
+
+    tagText = activeTags.length ? "Tags: " + activeTags.map(titleCaseTag).join(", ") : "All tags";
+    filterSummary.textContent = currentSortLabel() + " sort. " + tagText + (queryText ? '. Query: "' + queryText + '"' : ".");
+  }
+
+  function renderExplorer() {
+    var query = state.toolkitQuery.trim();
+    var selectedTags = normalizeTagSelection(state.activeTags);
+    var visibleEntries = explorerItems.map(function (item) {
+      var score = query ? scoreSearchEntry(buildExplorerSearchEntry(item), query) : 0;
+      var itemTags = item.__tags || getItemTags(item);
+      var matchesQuery = !query || score > 0;
+      var matchesTag = !selectedTags.length || selectedTags.some(function (tag) {
+        return itemTags.indexOf(tag) !== -1;
+      });
+
+      return {
+        item: item,
+        score: score,
+        updatedTime: itemUpdatedTime(item),
+        matchesQuery: matchesQuery,
+        matchesTag: matchesTag
+      };
+    }).filter(function (entry) {
+      return entry.matchesQuery && entry.matchesTag;
+    });
+
+    visibleEntries = sortExplorerEntries(visibleEntries, query);
+
+    bubbleGrid.innerHTML = visibleEntries.map(function (entry) {
+      var item = entry.item;
       return [
         '<div class="col bubble-item" data-bubble-id="', item.id, '">',
         '  <button type="button" class="bubble-button" data-open-bubble="', item.id, '" data-accent="red" aria-label="Open ', escapeHtml(item.title), ' details">',
-        '    <span class="bubble-badge">', escapeHtml(titleCaseTag(item.tags[0])), "</span>",
+        '    <span class="bubble-badge">', escapeHtml(titleCaseTag((item.__tags || item.tags || [])[0])), "</span>",
         '    <span class="bubble-title">', escapeHtml(item.title), "</span>",
         '    <span class="bubble-text">', escapeHtml(item.short), "</span>",
+        renderExplorerMeta(entry),
         "  </button>",
         "</div>"
       ].join("");
     }).join("");
 
-    resultCount.textContent = "Showing " + visibleItems.length + " cheatsheet card" + (visibleItems.length === 1 ? "" : "s");
-    emptyState.classList.toggle("d-none", visibleItems.length !== 0);
+    updateExplorerSummary(visibleEntries.length);
+    emptyState.classList.toggle("d-none", visibleEntries.length !== 0);
   }
 
   function setActiveTag(tag) {
-    state.activeTag = tag;
-    tagPills.forEach(function (pill) {
-      pill.classList.toggle("is-active", pill.getAttribute("data-tag") === tag);
-    });
+    var normalized = normalizeTagValue(tag);
+    var current = normalizeTagSelection(state.activeTags);
+
+    if (normalized === "all") {
+      state.activeTags = [];
+    } else if (current.indexOf(normalized) === -1) {
+      state.activeTags = current.concat(normalized);
+    } else {
+      state.activeTags = current.filter(function (item) {
+        return item !== normalized;
+      });
+    }
+
+    state.activeTag = state.activeTags[0] || "all";
+    updateTagPillState();
     renderExplorer();
   }
 
@@ -1149,12 +1387,178 @@
     }).join("");
   }
 
+  function setGeneratorState(emptyNode, loadingNode, errorNode, isEmpty, isLoading, errorMessage) {
+    if (emptyNode) {
+      emptyNode.classList.toggle("d-none", !isEmpty);
+    }
+    if (loadingNode) {
+      loadingNode.classList.toggle("d-none", !isLoading);
+    }
+    if (errorNode) {
+      errorNode.textContent = errorMessage || "";
+      errorNode.classList.toggle("d-none", !errorMessage);
+    }
+  }
+
+  function renderGeneratedExampleFields(fields) {
+    if (!wmsExampleResults) {
+      return;
+    }
+
+    wmsExampleResults.innerHTML = (fields || []).map(function (field) {
+      return [
+        '<article class="detail-field-card generated-example-card">',
+        '  <span class="detail-field-label">', escapeHtml(field.label), "</span>",
+        renderFieldValueHtml(field.value),
+        field.note ? '  <p class="detail-field-note">' + escapeHtml(field.note) + "</p>" : "",
+        "</article>"
+      ].join("");
+    }).join("");
+  }
+
+  function runWmsExampleGeneration() {
+    var prompt = wmsExamplePrompt ? wmsExamplePrompt.value.trim() : "";
+    var service = window.AuthorGuideWorkshopGenerator;
+
+    if (!prompt) {
+      renderGeneratedExampleFields([]);
+      setGeneratorState(wmsExampleEmpty, wmsExampleLoading, wmsExampleError, false, false, "Enter a workshop topic before generating examples.");
+      return;
+    }
+
+    if (!service || typeof service.generateExamples !== "function") {
+      setGeneratorState(wmsExampleEmpty, wmsExampleLoading, wmsExampleError, false, false, "Example generation is unavailable right now.");
+      return;
+    }
+
+    setGeneratorState(wmsExampleEmpty, wmsExampleLoading, wmsExampleError, false, true, "");
+    window.setTimeout(function () {
+      try {
+        renderGeneratedExampleFields(service.generateExamples(prompt).fields);
+        setGeneratorState(wmsExampleEmpty, wmsExampleLoading, wmsExampleError, false, false, "");
+        setLiveMessage("WMS field examples generated.");
+      } catch (error) {
+        renderGeneratedExampleFields([]);
+        setGeneratorState(wmsExampleEmpty, wmsExampleLoading, wmsExampleError, false, false, "Examples could not be generated. Try a shorter prompt.");
+      }
+    }, 180);
+  }
+
+  function setMarkdownOutput(value) {
+    generatedMarkdownText = String(value || "");
+    if (workshopMarkdownOutput) {
+      workshopMarkdownOutput.textContent = generatedMarkdownText;
+      if (workshopMarkdownOutput.parentElement) {
+        workshopMarkdownOutput.parentElement.classList.toggle("d-none", !generatedMarkdownText);
+      }
+    }
+    if (copyGeneratedMarkdown) {
+      copyGeneratedMarkdown.disabled = !generatedMarkdownText;
+    }
+  }
+
+  function runMarkdownGeneration() {
+    var prompt = workshopMarkdownPrompt ? workshopMarkdownPrompt.value.trim() : "";
+    var type = workshopMarkdownType ? workshopMarkdownType.value : "all";
+    var service = window.AuthorGuideWorkshopGenerator;
+    var snippet;
+
+    if (!service || typeof service.generateSnippet !== "function") {
+      setGeneratorState(workshopMarkdownEmpty, workshopMarkdownLoading, workshopMarkdownError, false, false, "Markdown generation is unavailable right now.");
+      return;
+    }
+
+    setMarkdownOutput("");
+    setGeneratorState(workshopMarkdownEmpty, workshopMarkdownLoading, workshopMarkdownError, false, true, "");
+    window.setTimeout(function () {
+      try {
+        snippet = service.generateSnippet(type, prompt);
+        if (snippet.requiresPrompt && !prompt) {
+          setGeneratorState(workshopMarkdownEmpty, workshopMarkdownLoading, workshopMarkdownError, false, false, "Enter a workshop topic before generating an outline.");
+          return;
+        }
+        setMarkdownOutput(snippet.body);
+        if (workshopMarkdownSummary) {
+          workshopMarkdownSummary.innerHTML = [
+            '<span class="generator-summary-row"><strong>Use case</strong><span>' + escapeHtml(snippet.summary) + "</span></span>",
+            '<span class="generator-summary-row"><strong>Source</strong><span>' + escapeHtml(snippet.source) + "</span></span>"
+          ].join("");
+        }
+        if (generatorOutputMeta) {
+          generatorOutputMeta.textContent = snippet.group + " / " + snippet.source;
+        }
+        setGeneratorState(workshopMarkdownEmpty, workshopMarkdownLoading, workshopMarkdownError, false, false, "");
+        setLiveMessage("Workshop snippet generated.");
+      } catch (error) {
+        setMarkdownOutput("");
+        setGeneratorState(workshopMarkdownEmpty, workshopMarkdownLoading, workshopMarkdownError, false, false, "Snippet could not be generated. Try a different option.");
+      }
+    }, 180);
+  }
+
+  function activateWmsStatus(button) {
+    var flow = button ? button.closest("[data-status-flow]") : null;
+    var rows;
+    var index;
+    var row;
+
+    if (!flow) {
+      return;
+    }
+
+    rows = Array.from(flow.querySelectorAll(".wms-status-csv code")).slice(1).map(function (node) {
+      var parts = node.textContent.split(",");
+      return {
+        status: (parts[0] || "").trim(),
+        owner: (parts[1] || "").trim(),
+        description: parts.slice(2).join(",").trim()
+      };
+    });
+    index = Number(button.getAttribute("data-status-index") || "0");
+    row = rows[index] || rows[0];
+
+    flow.querySelectorAll(".wms-status-button").forEach(function (candidate) {
+      var isActive = candidate === button;
+      candidate.classList.toggle("is-active", isActive);
+      candidate.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+
+    flow.querySelector("#wmsStatusOwner").textContent = row.owner;
+    flow.querySelector("#wmsStatusTitle").textContent = row.status;
+    flow.querySelector("#wmsStatusDescription").textContent = row.description;
+    setLiveMessage(row.status + " status selected.");
+  }
+
+  function syncMarkdownSnippetSummary() {
+    var service = window.AuthorGuideWorkshopGenerator;
+    var type = workshopMarkdownType ? workshopMarkdownType.value : "";
+    var item;
+
+    if (!workshopMarkdownSummary || !service || typeof service.getSnippetCatalog !== "function") {
+      return;
+    }
+
+    item = service.getSnippetCatalog().find(function (candidate) {
+      return candidate.id === type;
+    });
+
+    if (!item) {
+      workshopMarkdownSummary.textContent = "Select a snippet and generate it here.";
+      return;
+    }
+
+    workshopMarkdownSummary.innerHTML = [
+      '<span class="generator-summary-row"><strong>Use case</strong><span>' + escapeHtml(item.summary) + "</span></span>",
+      '<span class="generator-summary-row"><strong>Source</strong><span>' + escapeHtml(item.source) + "</span></span>"
+    ].join("");
+  }
+
   function decorateExpandableMedia(root) {
     if (!root) {
       return;
     }
 
-    root.querySelectorAll(".step-figure, .guide-figure, .modal-media-figure, .evidence-figure, .guide-source-panel-prose figure, .guide-source-prose figure").forEach(function (figure) {
+    root.querySelectorAll(".step-figure, .guide-figure, .modal-media-figure, .evidence-figure, .inline-evidence-card, .guide-source-panel-prose figure, .guide-source-prose figure").forEach(function (figure) {
       var image = figure.querySelector("img");
       var caption = figure.querySelector("figcaption");
       var captionText;
@@ -2673,6 +3077,7 @@
     setModeRegionVisibility(beginnerMode, mode === "beginner");
     setModeRegionVisibility(explorerMode, mode === "explorer");
     setModeRegionVisibility(guideMode, mode === "guide");
+    setModeRegionVisibility(generatorMode, mode === "generator");
     setModeRegionVisibility(searchMode, mode === "search");
 
     if (mode !== "explorer") {
@@ -2708,6 +3113,15 @@
           window.scrollTo({ top: 0, behavior: smoothBehavior() });
         } else {
           scrollToTarget(guideMode);
+        }
+      }
+    } else if (mode === "generator") {
+      updateBreadcrumb();
+      if (config.scroll !== false) {
+        if (config.forceTop) {
+          window.scrollTo({ top: 0, behavior: smoothBehavior() });
+        } else {
+          scrollToTarget(generatorMode);
         }
       }
     } else if (mode === "search") {
@@ -2751,6 +3165,8 @@
         setLiveMessage("Cheatsheet opened.");
       } else if (mode === "guide") {
         setLiveMessage("Full Guide opened at " + (currentGuideSection() ? currentGuideSection().title : "Start Guide") + ".");
+      } else if (mode === "generator") {
+        setLiveMessage("Markdown Workshop Generator opened.");
       } else if (mode === "search") {
         setLiveMessage("Search results opened.");
       }
@@ -2900,6 +3316,11 @@
       return;
     }
 
+    if (cleaned === "generator" || cleaned === "markdown-generator" || cleaned === "workshop-markdown-generator") {
+      switchMode("generator", { scroll: true, forceTop: true, hash: false, announce: false });
+      return;
+    }
+
     if (cleaned === "guide" || cleaned === "full-guide") {
       window.location.href = fullGuideHref;
       return;
@@ -2944,7 +3365,9 @@
     isRestoringHistory = true;
     state.currentStep = Math.max(0, Math.min(Number(route.currentStep || 0), stepSections.length - 1));
     state.fastTrack = route.fastTrack || state.fastTrack;
-    state.activeTag = route.activeTag || "all";
+    state.activeTags = normalizeTagSelection(route.activeTags || route.activeTag || []);
+    state.activeTag = state.activeTags[0] || "all";
+    state.toolkitSort = route.toolkitSort || state.toolkitSort || "alphabetical";
     state.toolkitQuery = route.toolkitQuery || "";
     state.searchQuery = route.searchQuery || "";
     state.guideSection = route.guideSection || state.guideSection;
@@ -2957,9 +3380,11 @@
       navSearchInput.value = state.searchQuery;
     }
 
-    tagPills.forEach(function (pill) {
-      pill.classList.toggle("is-active", pill.getAttribute("data-tag") === state.activeTag);
-    });
+    if (toolkitSort) {
+      toolkitSort.value = state.toolkitSort;
+    }
+
+    updateTagPillState();
 
     switchMode(route.mode || "hub", {
       scroll: false,
@@ -3029,12 +3454,15 @@
     var copyTextButton = event.target.closest("[data-copy-text]");
     var tagButton = event.target.closest("[data-tag]");
     var searchOpenButton = event.target.closest("[data-search-open]");
+    var wmsStatusButton = event.target.closest(".wms-status-button");
     var installCard = event.target.closest("[data-install-card]");
     var isPrimaryNav = modeButton && !!modeButton.closest(".nav-group-all");
 
     if (installCard && !copyTextButton) {
-      installCard.classList.add("is-complete");
-      installCard.setAttribute("aria-pressed", "true");
+      var isComplete = !installCard.classList.contains("is-complete");
+
+      installCard.classList.toggle("is-complete", isComplete);
+      installCard.setAttribute("aria-pressed", isComplete ? "true" : "false");
     }
 
     if (modeButton) {
@@ -3150,6 +3578,11 @@
     if (searchOpenButton) {
       openSearchResult(searchOpenButton.getAttribute("data-search-open"));
     }
+
+    if (wmsStatusButton) {
+      activateWmsStatus(wmsStatusButton);
+      return;
+    }
   });
 
   document.addEventListener("keydown", function (event) {
@@ -3183,6 +3616,14 @@
     renderExplorer();
     bubbleSearch.focus();
   });
+
+  if (toolkitSort) {
+    toolkitSort.addEventListener("change", function (event) {
+      state.toolkitSort = event.target.value || "alphabetical";
+      renderExplorer();
+      setLiveMessage("Cheatsheet sorted by " + currentSortLabel() + ".");
+    });
+  }
 
   if (navSearchForm && navSearchInput) {
     navSearchForm.addEventListener("submit", function (event) {
@@ -3238,6 +3679,34 @@
     });
   }
 
+  if (wmsExampleForm) {
+    wmsExampleForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      runWmsExampleGeneration();
+    });
+  }
+
+  if (workshopMarkdownForm) {
+    workshopMarkdownForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      runMarkdownGeneration();
+    });
+  }
+
+  if (workshopMarkdownType) {
+    workshopMarkdownType.addEventListener("change", syncMarkdownSnippetSummary);
+    syncMarkdownSnippetSummary();
+  }
+
+  if (copyGeneratedMarkdown) {
+    copyGeneratedMarkdown.addEventListener("click", function () {
+      if (!generatedMarkdownText) {
+        return;
+      }
+      copyText(generatedMarkdownText, copyGeneratedMarkdown);
+    });
+  }
+
   window.addEventListener("hashchange", function () {
     if (isRestoringHistory) {
       return;
@@ -3287,6 +3756,7 @@
   updateNav();
   updateNavSearch();
   updateBeginnerUI();
+  renderTagPills();
   renderExplorer();
   renderGuideNav();
   loadGuideCatalog().finally(function () {
