@@ -24,11 +24,22 @@ In this workshop, you will:
 
 <!-- Estimated Workshop Time: intentionally not shown in this readiness guide. -->
 
-## TL;DR: Start Here
+## TL;DR: Author Quick Guide
 
-Use the [TL;DR quick reference](../TLDR.md) before working through the guide. It gives authors the complete delivery path: assign roles, select and test one attendee access path, request and verify the event code, prepare Oracle accounts and prerequisites, plan capacity and reservation time, dry run, and complete the go/no-go check.
+Use this section when you need the delivery plan without reading every lab.
 
-For events with 50 or more attendees, confirm capacity and pre-provisioning with William and the LiveLabs team. If reservations happen during the session, start them first and use the buffer to present product context while environments build. Do not start hands-on work until attendees have the expected environment.
+### 60-Second Ready Check
+
+- Assign the facilitator, driver, help owner, SME, and event owner.
+- Choose one attendee path: event code, green button, or brown button.
+- Verify the event URL, code, first screen, attendee count, dates, and help contact.
+- For 50+, contact William and LiveLabs. Confirm available space and pre-provision.
+- Dry run with the same account, link, network, browser, and launch path.
+- Send account, access, network, event-code, first-screen, and support instructions early.
+- Record provisioning time. Prepare product context for the wait.
+- Complete Lab 5. Choose **Ready**, **Ready with risk**, or **Not ready**.
+- Keep Lab 6 open during the event.
+
 ## Acknowledgements
 
 - **Author:** Oracle LiveLabs Team, July 2026
