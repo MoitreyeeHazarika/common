@@ -36,7 +36,7 @@ To access Oracle Machine Learning User Interface:
 
 	![Oracle Machine Learning Notebooks Sign in page](images/omluser-signin.png)
 
-  This opens the Oracle Machine Learning user interface home page.
+  	This opens the Oracle Machine Learning user interface home page.
 
 	![Notebooks option in OML homepage](images/homepage.png)
 
