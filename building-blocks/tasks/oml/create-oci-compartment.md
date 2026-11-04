@@ -15,35 +15,36 @@ To create an OCI Compartment:
 
 1. Open the **Navigation** menu.
 
-	![Click the Navigation menu](images/xx.png " ")
+	![Click the Navigation menu](images/nav-menu-icon.png " ")
 
 2. Click **Identity & Security**. Under **Identity**, click **Compartments**.
 
-	![The Navigation menu is clicked. The navigation path to Compartments is displayed](images/xx.png " ")
+	![The Navigation menu is clicked. The navigation path to Compartments is displayed](images/identity-comp.png " ")
 
 	For faster navigation, you can pin items that you use frequently. To pin an item, hover over the menu item and then click pin to the left of the item name.
 	
-	![An example on pinning an item for quicker access](images/xx.png " ")
+	![An example on pinning an item for quicker access](images/identity-comp-pin.png " ")
 
  	The pinned item is displayed in the Pinned section of the Home tab the next time you use the Navigation menu.
-![An example on pinning an item for quicker access](images/xx.png " ")
- 	The Recently visited section of the Home tab shows recently used navigation items.
- 	To quickly find navigation menu items, use the Search text box.
+	
+	![An example on pinning an item for quicker access](images/pin-example.png " ")
+		
+	The Recently visited section of the Home tab shows recently used navigation items.
+
+	To quickly find navigation menu items, use the Search text box.
 
 3. On the **Compartments** page, click **Create Compartment**.
 
-	![Database Actions button in ADB Console](images/xx.png " ")
+	![Create Compartment option on Compartments page](images/comp-page.png " ")
 
-4. In the **Create Compartment** dialog box, enter a name and a description in the **Name** and the **Description** fields respectively..
-   
-    ![ADB login into Database Actions](images/xx.png " ")
+4. In the **Create Compartment** dialog box, enter a name and a description in the **Name** and the **Description** fields respectively.
 
 5. In the **Parent Compartment** drop-down list, select your parent compartment, and then click **Create Compartment**.
 
-	![Create user option](images/xx.png " ")
+	![ADB login into Database Actions](images/create-comp-dialog.png " ")
 
 	The **Compartments** page is re-displayed and the newly created compartment is displayed in the list of available compartments.
 
->**Note:** Wait a couple of minutes, then refresh the page to start using the new compartment.
+	>**Note:** Wait a couple of minutes, then refresh the page to start using the new compartment.
 
 This completes the task of creating a new compartment.

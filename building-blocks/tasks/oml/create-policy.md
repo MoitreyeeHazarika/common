@@ -11,16 +11,18 @@ Create a policy that will enable you to use **OCI Generative AI** within your pr
 
 To create an OCI Compartment:
 
-1. From the Console, open the Navigation menu and click Identity & Security. Under Identity, click Policies.
+1. From the **Console**, open the **Navigation** menu and click **Identity & Security**. Under **Identity**, click **Policies**.
 
-2. Click Create policy and specify the following into the appropriate fields:
+    ![Create Policy](images/identity-policies.png " ")
 
->**Note:** Slide the Show manual editor control to display the text field in order to paste the policy.
+2. Click **Create policy** and specify the following into the appropriate fields:
 
-* **Name:** `OCIGenAI`
-* **Description:** `OCIGenAI policy`
-* **Compartment:** Select your own compartment
-* **Policy Builder:** `allow any-user to manage generative-ai-family in compartment training-adw-compartment`
+    >**Note:** Slide the Show manual editor control to display the text field in order to paste the policy.
+
+    * **Name:** `OCIGenAI`
+    * **Description:** `OCIGenAI policy`
+    * **Compartment:** Select your own compartment
+    * **Policy Builder:** `allow any-user to manage generative-ai-family in compartment training-adw-compartment`
 
 3. Click **Create**.
 
