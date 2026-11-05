@@ -6,19 +6,8 @@
 -->
 
 Data Science Agent works with large language models accessed through Oracle `DBMS_CLOUD_AI` and `DBMS_CLOUD_AI_AGENT` packages. The `DBMS_CLOUD_AI` package, with Select AI, supports the translation of natural language prompts to generate, run, explain SQL statements, and also enables RAG and natural language-based interactions, including chats with LLMs.
-This table lists the recommended large language models and the scenarios in which each should be used.
 
-| Provider | Tier | Large Language Model |
-| ------------- | ----------- | ---------------------- |
-| OpenAI or OCI GenAI | Top | gpt-6-sol |
-| OpenAI or OCI GenAI | Cost-effective | gpt-6-luna |
-| OCI GenAI | Top | xai.grok-4.7 |
-| OCI GenAI | Cost-effective | xai.grok-4.3 |
-| Google | Top | gemini-3.8-flash |
-| Google | Cost-effective | gemini-3.8-flash |
-| Anthropic | Top | claude-opus-5-5 |
-| Anthropic | Cost-effective | claude-sonnet-5-5 |
-{: title="Recommended Models"}
+For more information, see [Recommended Models](https://docs.oracle.com/en/database/oracle/machine-learning/data-science-agent/dsaug/dsa_bp_recommended-models.html).
 
 >**Note:** When using OCI Generative AI, use the provider and model identifiers exactly as documented for OCI GenAI. Some model identifiers may include the original model family or vendor name.
 
